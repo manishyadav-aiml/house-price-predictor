@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Predict California house prices with a Linear Regression model.">
+<title>House Price Predictor</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div id="bar" aria-hidden="true"></div>
+<header><div class="wrap bar">
+  <a class="logo" href="#top">🏠 Price Predictor</a>
+  <nav id="nav" aria-label="Main"><a href="#predict">Predict</a><a href="#batch">Batch</a><a href="#account">Account</a><a href="#faq">FAQ</a><a href="#contact">Feedback</a></nav>
+  <input id="q" type="search" placeholder="Search help…" aria-label="Search the help and FAQ" autocomplete="off">
+  <button class="ib" id="theme" aria-label="Toggle dark mode" title="Toggle dark mode">🌓</button>
+  <button class="ib" id="menu" aria-label="Open menu" aria-expanded="false" aria-controls="nav">☰</button>
+</div></header>
+
+<main id="main" class="wrap">
+<section class="hero" id="top">
+  <h1>California House Price Predictor</h1>
+  <p>A Linear Regression model trained on the California Housing dataset (1990 census). Enter a neighbourhood’s details and get an estimated median house value.</p>
+  <p id="demo" class="warn" hidden><strong>Demo model.</strong> This app is running on a model trained with synthetic data because the real dataset could not be downloaded. Run <code>python train.py</code> with internet access to train on real data.</p>
+  <p><span class="pill" id="mstat">Loading model…</span></p>
+</section>
+
+<section id="predict"><h2>Predict a price</h2>
+  <div class="card">
+    <form id="pf" novalidate><div class="fields" id="fields"></div>
+      <div class="row"><label for="model" class="noprint m0">Model</label><select id="model" aria-label="Model"></select>
+      <button class="btn" type="submit">Predict price</button><button class="btn alt" type="button" id="reset">Reset</button></div>
+      <p class="err" id="pmsg" role="alert"></p>
+    </form>
+    <div class="result" id="result" role="status" aria-live="polite" hidden>
+      <div class="note">Estimated median house value</div><div class="price" id="price"></div>
+      <div class="note" id="margin"></div>
+      <div class="row noprint center"><button class="btn alt" id="copy" type="button">Copy result</button><button class="btn alt" id="print" type="button">Print</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="batch"><h2>Batch prediction (CSV)</h2>
+  <div class="card searchable"><p class="note">Upload a .csv (max 1 MB, 500 rows) with the columns <code id="cols"></code>.</p>
+    <div class="row"><input id="file" type="file" accept=".csv,text/csv" aria-label="CSV file"><button class="btn" id="bgo" type="button">Predict file</button></div>
+    <p class="err" id="bmsg" role="alert"></p><div class="scroll"><table id="btable" hidden><thead><tr><th>Row</th><th>Result</th></tr></thead><tbody></tbody></table></div></div>
+</section>
+
+<section id="account"><h2>Account and history</h2>
+  <div class="two">
+    <div class="card"><div id="guest"><h3>Sign in or create an account</h3><p class="note">Signed-in users get a private history of their predictions.</p>
+      <form id="af" novalidate>
+        <label for="ae">Email</label><input id="ae" type="email" autocomplete="username">
+        <label for="ap">Password (10+ characters)</label>
+        <div class="pw"><input id="ap" type="password" autocomplete="current-password"><button type="button" id="pwt" aria-pressed="false" aria-controls="ap">Show</button></div>
+        <p class="err" id="amsg" role="alert"></p>
+        <div class="row"><button class="btn" type="submit" data-a="login">Sign in</button><button class="btn alt" type="submit" data-a="register">Create account</button></div>
+      </form></div>
+      <div id="member" hidden><h3>Signed in</h3><p id="who"></p><div class="row"><button class="btn alt" id="logout" type="button">Sign out</button><button class="btn danger" id="clear" type="button">Clear my history</button></div></div></div>
+    <div class="card"><h3>Prediction history</h3><p class="note" id="hnote">Sign in to see your saved predictions.</p>
+      <div class="scroll"><table id="htable" hidden><thead><tr><th>Date</th><th>Income</th><th>Lat, Lon</th><th>Price</th></tr></thead><tbody></tbody></table></div></div>
+  </div>
+</section>
+
+<section id="faq"><h2>FAQ</h2>
+  <details class="searchable"><summary>How accurate is it?</summary><p id="acc">Accuracy figures appear once the model has loaded.</p></details>
+  <details class="searchable"><summary>What do the inputs mean?</summary><p>They describe a census block group: median income (in $10,000s), average house age, rooms, bedrooms, population, occupants per household and the location.</p></details>
+  <details class="searchable"><summary>What is the improved model?</summary><p>It adds engineered features (ratios, log transforms and distance to big cities) and Ridge regularisation. It is usually more accurate than the plain baseline.</p></details>
+  <details class="searchable"><summary>Can I use this to value a real house?</summary><p>No. The data is from 1990 and describes neighbourhood averages. Treat the result as a learning demo, not a valuation.</p></details>
+  <details class="searchable"><summary>Is my data stored?</summary><p>Predictions are only saved if you are signed in, and only you can see them. Your password is stored as a salted hash.</p></details>
+</section>
+<p id="none" class="note" hidden>No results. Try another word.</p>
+
+<section id="contact"><h2>Feedback</h2>
+  <div class="card">
+    <form id="cf" novalidate>
+      <label for="cn">Name</label><input id="cn" name="name" autocomplete="name"><p class="err" id="e-name" role="alert"></p>
+      <label for="ce">Email</label><input id="ce" name="email" type="email" autocomplete="email"><p class="err" id="e-email" role="alert"></p>
+      <label for="cm">Message</label><textarea id="cm" name="message" rows="4"></textarea><p class="err" id="e-message" role="alert"></p>
+      <p class="err" id="cmsg" role="alert"></p><button class="btn" type="submit">Send feedback</button>
+    </form>
+    <div class="ok" id="ok" tabindex="-1" role="status" hidden><strong>Thank you, your feedback was sent.</strong> <button class="btn alt" id="again" type="button">Send more</button></div>
+    <p class="note noprint">Campaign tags captured: <span id="utm"></span></p>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">Model last trained <time id="trained"></time>. Data: California Housing (1990 census).</div></footer>
+<a class="btn fab" href="#contact" aria-label="Send feedback">✉ Feedback</a>
+<button class="ib" id="top2" aria-label="Back to top" hidden>↑</button>
+
+<div id="cookie" role="region" aria-label="Cookie consent" hidden>
+  <p>We only store a session cookie and your theme/consent choice. No tracking, no ads.</p>
+  <button class="btn" data-c="accepted" type="button">Accept</button><button class="btn alt" data-c="declined" type="button">Decline</button>
+</div>
+<dialog id="dlg" aria-labelledby="dt"><form method="dialog">
+  <h3 id="dt">Clear your history?</h3><p class="note">All your saved predictions will be deleted. This cannot be undone.</p>
+  <button class="btn alt" value="no">Cancel</button> <button class="btn danger" value="yes">Yes, clear it</button>
+</form></dialog>
+<script src="/static/app.js"></script>
+</body>
+</html>
