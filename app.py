@@ -22,7 +22,10 @@ SECRET = os.environ.get("SECRET_KEY", "")
 if len(SECRET) < 32:                          # S3: no fallback secret, refuse to start
     raise RuntimeError("SECRET_KEY missing or shorter than 32 chars. Run:  python setup_env.py   (creates .env for you)")
 HERE = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.environ.get("DATABASE_PATH", os.path.join(HERE, "app.db"))
+DB_PATH = os.environ.get(
+    "DATABASE_PATH",
+    "/tmp/app.db" if os.environ.get("VERCEL") else os.path.join(HERE, "app.db")
+)
 ALLOWED_ORIGINS = {o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "").split(",") if o.strip()}   # S19
 LIM = {k: int(os.environ.get(k + "_LIMIT", d)) for k, d in {"AUTH": 5, "PREDICT": 60, "BATCH": 10, "FEEDBACK": 5}.items()}   # S17
 HISTORY_MAX, BATCH_MAX_ROWS = 50, 500
