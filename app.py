@@ -162,6 +162,10 @@ def predict_prices(rows, which):
 @app.get("/")
 def index(): return send_from_directory(app.static_folder, "index.html")
 
+@app.get("/<path:filename>")
+def public_assets(filename):
+    return send_from_directory("public", filename)
+
 @app.get("/health")
 def health(): return jsonify(status="ok", models=sorted(MODELS), demo=DEMO)
 
