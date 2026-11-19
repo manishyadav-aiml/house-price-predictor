@@ -1,1 +1,7 @@
--r requirements-app.txt
+flask>=3.0
+python-dotenv
+gunicorn
+numpy
+pandas
+scikit-learn
+joblib
