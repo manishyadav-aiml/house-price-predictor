@@ -1,7 +1,1 @@
-# Everything for the notebook, PDF report and web app
 -r requirements-app.txt
-matplotlib
-seaborn
-reportlab
-pillow
-jupyter
